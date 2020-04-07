@@ -1,0 +1,3 @@
+[submodule "jibri/jibri"]
+	path = jibri/jibri
+	url = https://github.com/jitsi/jibri

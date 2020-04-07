@@ -161,3 +161,7 @@ services:
 # Custom network so all services can communicate using a FQDN
 networks:
     meet.jitsi:
+        driver: bridge
+        external: false
+        driver_opts:
+            com.docker.network.bridge.name: br_meet

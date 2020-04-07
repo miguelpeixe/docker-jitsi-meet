@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+rm -rf /build/rootfs
+mkdir -p /build/m2cache
+ln -s /build/m2cache /root/.m2
+
+cd /src/jibri
+mvn package -Dmaven.test.skip=true -DskipTests
+
+MVNVER=`xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" pom.xml`
+
+cp -a resources/debian-package /build/rootfs
+cp -a debian/postinst /build/rootfs/
+
+mkdir -p /build/rootfs/opt/jitsi/jibri/
+mv target/jibri-${MVNVER}-jar-with-dependencies.jar /build/rootfs/opt/jitsi/jibri/jibri.jar
+cp -a lib/logging.properties /build/rootfs/etc/jitsi/jibri
+

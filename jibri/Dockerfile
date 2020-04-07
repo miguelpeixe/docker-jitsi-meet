@@ -6,7 +6,7 @@ ARG CHROMEDRIVER_MAJOR_RELEASE=latest
 
 RUN \
 	apt-dpkg-wrap apt-get update \
-	&& apt-dpkg-wrap apt-get install -y jibri \
+	&& apt-dpkg-wrap apt-get install -y kmod ffmpeg curl alsa-utils icewm xdotool xserver-xorg-input-void xserver-xorg-video-dummy libnss3-tools \
 	&& apt-cleanup
 
 RUN \
@@ -43,6 +43,9 @@ RUN \
         || true
 
 COPY rootfs/ /
+COPY build/rootfs/ /
+
+RUN /postinst configure && rm /postinst
 
 VOLUME /config
 
