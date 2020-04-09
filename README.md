@@ -32,9 +32,11 @@ follow these steps:
 
 * Clone this repository to your computer.
   * `git clone https://github.com/jitsi/docker-jitsi-meet && cd docker-jitsi-meet`
-* Create a ``.env`` file by copying and adjusting ``env.example``, and create required `CONFIG` directories
+* Create a ``.env`` file by copying and adjusting ``env.example``
   * `cp env.example .env`
-  * `mkdir -p ~/.jitsi-meet-cfg/{web/letsencrypt,transcripts,prosody,jicofo,jvb}`
+  * Set strong passwords in the security section options: `./gen-passwords.sh`
+* Create required `CONFIG` directories
+  * `mkdir -p ~/.jitsi-meet-cfg/{web/letsencrypt,transcripts,prosody,jicofo,jvb,jigasi,jibri}`
 * Run ``docker-compose up -d``.
 * Access the web UI at [``https://localhost:8443``](https://localhost:8443) (or a different port, in case you edited the compose file).
 
@@ -50,6 +52,17 @@ follows: ``docker-compose -f docker-compose.yml -f etherpad.yml up``
 If you want to use jibri too, first configure a host as described in JItsi BRoadcasting Infrastructure configuration section
 and then run Docker Compose as follows: ``docker-compose -f docker-compose.yml -f jibri.yml up -d``
 or to use jigasi too: ``docker-compose -f docker-compose.yml -f jigasi.yml -f jibri.yml up -d``
+
+### Security note
+
+This setup used to have default passwords for intetrnal accounts used across components. In order to make the default setup
+secure by default these have been removed and the respective containers won't start without having a password set.
+
+Strong passwordds may be generated as follows: `./gen-passwords.sh`
+This will modify your `.env` file (a backup is saved in `.env.backup`) and set strong passwords for each of the
+require options. Passwords are  generated using `openssl rand -hex 16` .
+
+DO NOT reuse any of the passwords.
 
 ## Architecture
 
