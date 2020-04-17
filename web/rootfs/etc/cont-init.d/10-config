@@ -39,18 +39,17 @@ if [[ $DISABLE_HTTPS -ne 1 ]]; then
         if [[ ! -f /etc/cron.daily/letencrypt-renew ]]; then
             cp /defaults/letsencrypt-renew /etc/cron.daily/
         fi
+    fi
+    # always create self-signed certs
+    if [[ -f /config/keys/cert.key && -f /config/keys/cert.crt ]]; then
+        echo "using keys found in /config/keys"
     else
-        # use self-signed certs
-        if [[ -f /config/keys/cert.key && -f /config/keys/cert.crt ]]; then
-            echo "using keys found in /config/keys"
-        else
-            echo "generating self-signed keys in /config/keys, you can replace these with your own keys if required"
-            openssl req -newkey rsa:2048 -new -x509 -days 9131 -nodes -sha256 \
-                -subj "/CN=meet.jitsi" \
-                -reqexts SAN -extensions SAN \
-                -config <(cat /etc/ssl/openssl.cnf ; printf "\n[SAN]\nsubjectAltName=DNS:meet.jitsi") \
-                -out /config/keys/cert.crt -keyout /config/keys/cert.key
-        fi
+        echo "generating self-signed keys in /config/keys, you can replace these with your own keys if required"
+        openssl req -newkey rsa:2048 -new -x509 -days 9131 -nodes -sha256 \
+            -subj "/CN=$XMPP_DOMAIN" \
+            -reqexts SAN -extensions SAN \
+            -config <(cat /etc/ssl/openssl.cnf ; printf "\n[SAN]\nsubjectAltName=DNS:$XMPP_DOMAIN") \
+            -out /config/keys/cert.crt -keyout /config/keys/cert.key
     fi
 fi
 
@@ -67,8 +66,16 @@ if [[ ! -f /config/nginx/ssl.conf ]]; then
     tpl /defaults/ssl.conf > /config/nginx/ssl.conf
 fi
 
+if [[ ! -f /config/nginx/ssl-local.conf ]]; then
+    tpl /defaults/ssl-local.conf > /config/nginx/ssl-local.conf
+fi
+
 if [[ ! -f /config/nginx/site-confs/default ]]; then
     tpl /defaults/default > /config/nginx/site-confs/default
+fi
+
+if [[ ! -f /config/nginx/site-confs/local ]]; then
+    tpl /defaults/local > /config/nginx/site-confs/local
 fi
 
 if [[ ! -f /config/config.js ]]; then
